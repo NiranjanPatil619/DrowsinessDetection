@@ -1,12 +1,6 @@
 # DROWSINESS DETECTION WITH OPENCV
 ### Detects and Alerts if the driver is starting to doze off.
 
-Very simple and effective blink detector using just Python, OpenCV and dlib.
-
-All thanks to Adrian Rosebrock (from [pyimagesearch](https://www.pyimagesearch.com/)) for making
-great tutorials. This project is inspired from his blog: [Drowsiness detection with OpenCV](https://www.pyimagesearch.com/2017/05/08/drowsiness-detection-opencv/).
-I have included the author's code and the one I wrote my self as well.
-
 ## **Key Points**
 1. Steps involved:
     1. Localize the face in the video frame
@@ -51,13 +45,6 @@ so that our main thread doesn't block and our script keeps on working and the so
 	--shape-predictor shape_predictor_68_face_landmarks.dat \
 	--alarm alarm.wav
 ```
-
-## **Results:**
-The results are pretty accurate. We can see that it accurately and reliably detects if the driver
-starts to fall asleep. It works pretty well in real time and doesn't need very superior hardware.
-
-![Example output](assets/output.gif)
-
 
 
 ## **Limitations**
