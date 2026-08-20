@@ -12,7 +12,7 @@ import cv2
 
 
 def sound_alarm(path):
-    # play an alarm sound
+    
     playsound.playsound(path)
 
 
