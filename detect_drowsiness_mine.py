@@ -32,9 +32,9 @@ ap.add_argument("-w", "--webcam", type=int, default=0, help="index of webcam on 
 args = vars(ap.parse_args())
 
 EYE_AR_THRESH = 0.26
-EYE_AR_CONSEC_FRAMES = 48
+ALARM_TRIGGER_TIME = 3.5
 
-COUNTER = 0
+EYE_CLOSED_START_TIME = None
 ALARM_ON = False
 
 print("[INFO] Loading facial landmark predictor...")
@@ -73,9 +73,10 @@ while True:
         cv2.drawContours(frame, [rightEyeHull], -1, (0, 255, 0), 1)
 
         if ear < EYE_AR_THRESH:
-            COUNTER += 1
+            if EYE_CLOSED_START_TIME is None:
+                EYE_CLOSED_START_TIME = time.time()
 
-            if COUNTER >= EYE_AR_CONSEC_FRAMES:
+            if (time.time() - EYE_CLOSED_START_TIME) >= ALARM_TRIGGER_TIME:
                 if not ALARM_ON:
                     ALARM_ON = True
                     if args["alarm"] != "":
@@ -85,7 +86,7 @@ while True:
 
                 cv2.putText(frame, "DROWSINESS ALERT!", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
         else:
-            COUNTER = 0
+            EYE_CLOSED_START_TIME = None
             ALARM_ON = False
 
         cv2.putText(frame, "EAR: {:.2f}".format(ear), (300, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)

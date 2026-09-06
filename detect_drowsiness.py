@@ -14,10 +14,11 @@ import imutils
 import time
 import dlib
 import cv2
+import os
 
 def sound_alarm(path):
 	# play an alarm sound
-	playsound.playsound(path)
+	os.system(f'afplay "{path}"')
 
 def eye_aspect_ratio(eye):
 	# compute the euclidean distances between the two sets of
@@ -46,15 +47,14 @@ ap.add_argument("-w", "--webcam", type=int, default=0,
 args = vars(ap.parse_args())
  
 # define two constants, one for the eye aspect ratio to indicate
-# blink and then a second constant for the number of consecutive
-# frames the eye must be below the threshold for to set off the
-# alarm
+# blink and then a second constant for the time (in seconds) the eye 
+# must be below the threshold for to set off the alarm
 EYE_AR_THRESH = 0.3
-EYE_AR_CONSEC_FRAMES = 48
+ALARM_TRIGGER_TIME = 3.5
 
-# initialize the frame counter as well as a boolean used to
+# initialize the eye closed start time as well as a boolean used to
 # indicate if the alarm is going off
-COUNTER = 0
+EYE_CLOSED_START_TIME = None
 ALARM_ON = False
 
 # initialize dlib's face detector (HOG-based) and then create
@@ -111,13 +111,14 @@ while True:
 		cv2.drawContours(frame, [rightEyeHull], -1, (0, 255, 0), 1)
 
 		# check to see if the eye aspect ratio is below the blink
-		# threshold, and if so, increment the blink frame counter
+		# threshold, and if so, start the timer
 		if ear < EYE_AR_THRESH:
-			COUNTER += 1
+			if EYE_CLOSED_START_TIME is None:
+				EYE_CLOSED_START_TIME = time.time()
 
-			# if the eyes were closed for a sufficient number of
+			# if the eyes were closed for a sufficient amount of time
 			# then sound the alarm
-			if COUNTER >= EYE_AR_CONSEC_FRAMES:
+			if (time.time() - EYE_CLOSED_START_TIME) >= ALARM_TRIGGER_TIME:
 				# if the alarm is not on, turn it on
 				if not ALARM_ON:
 					ALARM_ON = True
@@ -136,9 +137,9 @@ while True:
 					cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
 
 		# otherwise, the eye aspect ratio is not below the blink
-		# threshold, so reset the counter and alarm
+		# threshold, so reset the timer and alarm
 		else:
-			COUNTER = 0
+			EYE_CLOSED_START_TIME = None
 			ALARM_ON = False
 
 		# draw the computed eye aspect ratio on the frame to help
